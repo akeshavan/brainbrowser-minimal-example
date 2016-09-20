@@ -1,4 +1,14 @@
-BrainBrowser.config.set("model_types.vtk.worker", "vtk.worker.js");
+BrainBrowser.config.set("model_types.json.worker", "json.worker.js");
+BrainBrowser.config.set("model_types.mniobj.worker", "mniobj.worker.js");
+BrainBrowser.config.set("model_types.wavefrontobj.worker", "wavefrontobj.worker.js");
+BrainBrowser.config.set("model_types.freesurferbin.worker", "freesurferbin.worker.js");
+BrainBrowser.config.set("model_types.freesurferbin.binary", true);
+BrainBrowser.config.set("model_types.freesurferasc.worker", "freesurferasc.worker.js");
+BrainBrowser.config.set("intensity_data_types.text.worker", "text.intensity.worker.js");
+BrainBrowser.config.set("intensity_data_types.freesurferbin.worker", "freesurferbin.intensity.worker.js");
+BrainBrowser.config.set("intensity_data_types.freesurferbin.binary", true);
+BrainBrowser.config.set("intensity_data_types.freesurferasc.worker", "freesurferasc.intensity.worker.js");
+
 BrainBrowser.config.set("model_types.vtk.worker", "vtk.worker.js");
 BrainBrowser.config.set("intensity_data_types.csv.worker", "csv.intensity.worker.js");
 BrainBrowser.config.set('worker_dir', './brainbrowser-2.5.0/workers/');
@@ -32,27 +42,72 @@ var inputs = queryStringToHash();
 
 var modelUrl = inputs.model || './models/vtk/freesurfer_curvature.vtk'
 var overlayUrl = inputs.overlay || './models/vertices.csv'
+
+//if multiple input models, need to split then
+var modelUrl = inputs.model
+var overlayUrl = inputs.overlay
+modelUrl = modelUrl.split(';');
+overlayUrl = overlayUrl.split(';');
+//// need to shallow copy the elements
+modelFname = modelUrl.slice(0);
+overlayFname = overlayUrl.slice(0);
+for (f=0; f<modelUrl.length; f++) {
+  modelFname[f] = modelUrl[f].split('/').slice(-1).pop()+f.toString();
+}
+
+for (f=0; f<overlayUrl.length; f++) {
+    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop()+f.toString();
+}
+
+
+//    // determine model/overlay file formats
+urlsplit = modelUrl[0].split('.');
+ext = urlsplit.slice(-1).pop();
+if (ext == 'pial' || ext == 'white') {
+   format = 'freesurferbin';
+   }
+else {
+   format = ext; // e.g., vtk
+}
+modelFormat = format;
+urlsplit = overlayUrl[0].split('.');
+ext = urlsplit.slice(-1).pop();
+if (ext == 'thickness' || ext == 'curv') {
+   format = 'freesurferbin';
+}
+else if (ext == 'asc') {
+    format = 'freesurferasc';
+}
+else {
+      format = ext; // e.g., csv
+}
+overlayFormat = format;
+
 var colormaps = {}
 BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[val.name] = val.url})
+
 
 // Pulled out this function from the start call so that it's not so nested.
 function handleBrainz(viewer) {
   var meshgui;
   window.viewer = viewer;
   window.gui = gui;
-
+  window.addedMainGui = false
   //Add an event listener.
   viewer.addEventListener('displaymodel', function(brainBrowserModel) {
     window.brainBrowserModel = brainBrowserModel;
-
+    if (window.addedMainGui == false){
     meshgui = gui.addFolder(brainBrowserModel.model_data.name);
     meshgui.open();
+    window.addedMainGui = true}
 
   });
 
   viewer.addEventListener("loadintensitydata", function(event) {
+    console.log("event here is", event)
     var model_data = event.model_data;
     var intensity_data = event.intensity_data;
+    console.log("intensity data is", intensity_data)
     intensity_data.transparency = 1
     intensity_data.colormap_name = "Spectral"
     window.intensityData = intensity_data;
@@ -86,17 +141,34 @@ function handleBrainz(viewer) {
   viewer.setClearColor(0XFFFFFF);
   viewer.loadColorMapFromURL(BrainBrowser.config.get("color_maps")[0].url);
 
-
   // Load a model into the scene.
-  viewer.loadModelFromURL(modelUrl, {
-    format: 'vtk',
-    complete: function(){
-      viewer.loadIntensityDataFromURL(overlayUrl, {
-        format: "csv",
-        name: "Cortical Thickness"
-      });
+  
+  var overlayLoader = function(viewer, overlay, format, name, index, all_model_names){
+    return function(){
+        /*var idx = 0 
+        viewer.model_data.forEach(function(model_data, model_name){
+            model_data.name = all_model_names[idx]
+            idx = idx + 1
+        })*/
+       // console.log("model names are", model_names)
+        viewer.loadIntensityDataFromURL(overlay, {
+          format: format,
+          name: name//,
+          //model_name: all_model_names[index] 
+        });
     }
-  });
+
+  }
+
+  
+  for(var surf=0; surf<modelUrl.length; surf++){
+    //console.log(modelUrl[surf], overlayUrl[surf])   
+    viewer.loadModelFromURL(modelUrl[surf], {
+      format: modelFormat,
+      complete: overlayLoader(window.viewer, overlayUrl[surf], overlayFormat, 
+                              modelFname[surf], surf, modelFname)
+    });
+  }
 
 }
 
