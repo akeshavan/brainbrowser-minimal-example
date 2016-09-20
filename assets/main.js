@@ -44,8 +44,8 @@ var modelUrl = inputs.model || './models/vtk/freesurfer_curvature.vtk'
 var overlayUrl = inputs.overlay || './models/vertices.csv'
 
 //if multiple input models, need to split then
-var modelUrl = inputs.model
-var overlayUrl = inputs.overlay
+//var modelUrl = inputs.model
+//var overlayUrl = inputs.overlay
 modelUrl = modelUrl.split(';');
 overlayUrl = overlayUrl.split(';');
 //// need to shallow copy the elements
@@ -90,12 +90,29 @@ BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[
 // Pulled out this function from the start call so that it's not so nested.
 function handleBrainz(viewer) {
   var meshgui;
+ // alias BB's THREE
+    var THREE = BrainBrowser.SurfaceViewer.THREE;
+      var COLORS = {
+          WHITE: 0xFFFFFF,
+              BLACK: 0x101010
+                };
+ 
   window.viewer = viewer;
   window.gui = gui;
   window.addedMainGui = false
   //Add an event listener.
   viewer.addEventListener('displaymodel', function(brainBrowserModel) {
     window.brainBrowserModel = brainBrowserModel;
+
+    brainBrowserModel.model.children.forEach(function(shape){
+      shape.material = new THREE.MeshLambertMaterial( {
+        color: COLORS.WHITE,
+        ambient: COLORS.WHITE,
+        specular: COLORS.BLACK,
+        vertexColors: THREE.VertexColors
+      });
+    });
+
     if (window.addedMainGui == false){
     meshgui = gui.addFolder(brainBrowserModel.model_data.name);
     meshgui.open();
@@ -150,7 +167,7 @@ function handleBrainz(viewer) {
             model_data.name = all_model_names[idx]
             idx = idx + 1
         })*/
-       // console.log("model names are", model_names)
+        //console.log("model names are", model_names)
         viewer.loadIntensityDataFromURL(overlay, {
           format: format,
           name: name//,
