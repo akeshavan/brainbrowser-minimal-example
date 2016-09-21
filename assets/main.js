@@ -40,8 +40,8 @@ BrainBrowser.SurfaceViewer.start('brainbrowser', handleBrainz);
 var gui = new dat.GUI();
 var inputs = queryStringToHash();
 
-var modelUrl = inputs.model || './models/vtk/freesurfer_curvature.vtk'
-var overlayUrl = inputs.overlay || './models/vertices.csv'
+var modelUrl = inputs.model || './models/vtk/freesurfer_curvature.vtk;./models/vtk/rh_freesurfer_curvature.vtk'
+var overlayUrl = inputs.overlay || './models/vertices.csv;./models/rh_vertices.csv'
 
 //if multiple input models, need to split then
 //var modelUrl = inputs.model
@@ -52,11 +52,11 @@ overlayUrl = overlayUrl.split(';');
 modelFname = modelUrl.slice(0);
 overlayFname = overlayUrl.slice(0);
 for (f=0; f<modelUrl.length; f++) {
-  modelFname[f] = modelUrl[f].split('/').slice(-1).pop()+f.toString();
+  modelFname[f] = modelUrl[f].split('/').slice(-1).pop();
 }
 
 for (f=0; f<overlayUrl.length; f++) {
-    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop()+f.toString();
+    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop();
 }
 
 
@@ -100,9 +100,11 @@ function handleBrainz(viewer) {
   window.viewer = viewer;
   window.gui = gui;
   window.addedMainGui = false
+  window.brainBrowserModels = []
   //Add an event listener.
   viewer.addEventListener('displaymodel', function(brainBrowserModel) {
     window.brainBrowserModel = brainBrowserModel;
+    window.brainBrowserModels.push(brainBrowserModel)
 
     brainBrowserModel.model.children.forEach(function(shape){
       shape.material = new THREE.MeshLambertMaterial( {
@@ -121,10 +123,9 @@ function handleBrainz(viewer) {
   });
 
   viewer.addEventListener("loadintensitydata", function(event) {
-    console.log("event here is", event)
     var model_data = event.model_data;
     var intensity_data = event.intensity_data;
-    console.log("intensity data is", intensity_data)
+    console.log("model_data name is", model_data.name)
     intensity_data.transparency = 1
     intensity_data.colormap_name = "Spectral"
     window.intensityData = intensity_data;
@@ -135,16 +136,17 @@ function handleBrainz(viewer) {
     var transparency = overlayGui.add(intensity_data, 'transparency',0,1);
     var cmap = overlayGui.add(intensity_data, "colormap_name", Object.keys(colormaps))
     vmin.onChange(function(newMin){
-      viewer.setIntensityRange(newMin, intensity_data.max)
+      viewer.setIntensityRange(intensity_data, newMin, intensity_data.max)
     })
     vmax.onChange(function(newMax){
-      viewer.setIntensityRange(intensity_data.min, newMax)
+      viewer.setIntensityRange(intensity_data, intensity_data.min, newMax)
     })
     transparency.onChange(function(newT){
+
         viewer.setTransparency(newT, {shape_name: model_data.name})
     })
     cmap.onChange(function(newC){
-        viewer.loadColorMapFromURL(colormaps[newC])
+        viewer.loadColorMapFromURL(colormaps[newC], {shape_name: model_data.name})
     })
     
   });
@@ -170,8 +172,8 @@ function handleBrainz(viewer) {
         //console.log("model names are", model_names)
         viewer.loadIntensityDataFromURL(overlay, {
           format: format,
-          name: name//,
-          //model_name: all_model_names[index] 
+          name: name,
+          model_name: name
         });
     }
 
