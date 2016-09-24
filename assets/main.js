@@ -143,10 +143,10 @@ function handleBrainz(viewer) {
     })
     transparency.onChange(function(newT){
 
-        viewer.setTransparency(newT, {shape_name: model_data.name})
+        viewer.setTransparency(newT, {shape_name: model_data.name+"_1"})
     })
     cmap.onChange(function(newC){
-        viewer.loadColorMapFromURL(colormaps[newC], {shape_name: model_data.name})
+        viewer.loadColorMapFromURL(colormaps[newC], {shape_name: model_data.name+"_1"})
     })
     
   });
@@ -170,12 +170,13 @@ function handleBrainz(viewer) {
             idx = idx + 1
         })*/
         //console.log("model names are", model_names)
+        if (overlay){
         viewer.loadIntensityDataFromURL(overlay, {
           format: format,
           name: name,
           model_name: name
         });
-    }
+    }}
 
   }
 
