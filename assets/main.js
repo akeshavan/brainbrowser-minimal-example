@@ -118,6 +118,8 @@ function handleBrainz(viewer) {
     if (window.addedMainGui == false){
     meshgui = gui.addFolder(brainBrowserModel.model_data.name);
     meshgui.open();
+    var screenshot = { "Capture Image":function(){ window.open(document.getElementsByTagName("canvas")[0].toDataURL("image/png", "final")) }};
+    meshgui.add(screenshot,'Capture Image');
     window.addedMainGui = true}
 
   });
@@ -146,7 +148,7 @@ function handleBrainz(viewer) {
         viewer.setTransparency(newT, {shape_name: model_data.name+"_1"})
     })
     cmap.onChange(function(newC){
-        viewer.loadColorMapFromURL(colormaps[newC], {shape_name: model_data.name+"_1"})
+        viewer.loadColorMapFromURL(colormaps[newC], {model_name: model_data.name})
     })
     
   });
