@@ -148,6 +148,10 @@ function handleBrainz(viewer) {
     meshgui.open();
     var screenshot = { "Capture Image":function(){ window.open(document.getElementsByTagName("canvas")[0].toDataURL("image/png", "final")) }};
     meshgui.add(screenshot,'Capture Image');
+    rotation = gui.addFolder("Rotation")
+    rotation.add(window.viewer.autorotate, "z")
+    rotation.add(window.viewer.autorotate, "y")
+    rotation.add(window.viewer.autorotate, "z")
     window.addedMainGui = true}
     if (window.numLoadedModels == totalModels && window.numLoadedOverlays == totalOverlays){spinner.stop(target)}
   });
