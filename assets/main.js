@@ -151,7 +151,7 @@ function handleBrainz(viewer) {
     rotation = gui.addFolder("Rotation")
     rotation.add(window.viewer.autorotate, "z")
     rotation.add(window.viewer.autorotate, "y")
-    rotation.add(window.viewer.autorotate, "z")
+    rotation.add(window.viewer.autorotate, "x")
     window.addedMainGui = true}
     if (window.numLoadedModels == totalModels && window.numLoadedOverlays == totalOverlays){spinner.stop(target)}
   });
