@@ -85,7 +85,33 @@ overlayFormat = format;
 
 var colormaps = {}
 BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[val.name] = val.url})
+var totalModels = modelFname.length
+var totalOverlays = overlayFname.length
 
+var opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 42 // The radius of the inner circle
+, scale: 1 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#000' // #rgb or #rrggbb or array of colors
+, opacity: 0.25 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '50%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'absolute' // Element positioning
+}
+var target = document.getElementById('brainbrowser')
+var spinner = new Spinner(opts).spin(target);
 
 // Pulled out this function from the start call so that it's not so nested.
 function handleBrainz(viewer) {
@@ -101,11 +127,13 @@ function handleBrainz(viewer) {
   window.gui = gui;
   window.addedMainGui = false
   window.brainBrowserModels = []
+  window.numLoadedModels = 0
+  window.numLoadedOverlays = 0
   //Add an event listener.
   viewer.addEventListener('displaymodel', function(brainBrowserModel) {
     window.brainBrowserModel = brainBrowserModel;
     window.brainBrowserModels.push(brainBrowserModel)
-
+    window.numLoadedModels = window.numLoadedModels + 1
     brainBrowserModel.model.children.forEach(function(shape){
       shape.material = new THREE.MeshLambertMaterial( {
         color: COLORS.WHITE,
@@ -121,7 +149,7 @@ function handleBrainz(viewer) {
     var screenshot = { "Capture Image":function(){ window.open(document.getElementsByTagName("canvas")[0].toDataURL("image/png", "final")) }};
     meshgui.add(screenshot,'Capture Image');
     window.addedMainGui = true}
-
+    if (window.numLoadedModels == totalModels && window.numLoadedOverlays == totalOverlays){spinner.stop(target)}
   });
 
   viewer.addEventListener("loadintensitydata", function(event) {
@@ -150,7 +178,8 @@ function handleBrainz(viewer) {
     cmap.onChange(function(newC){
         viewer.loadColorMapFromURL(colormaps[newC], {model_name: model_data.name})
     })
-    
+    window.numLoadedOverlays = window.numLoadedOverlays + 1
+    if (window.numLoadedModels == totalModels && window.numLoadedOverlays == totalOverlays){spinner.stop(target)}
   });
 
   viewer.addEventListener("loadcolormap", function(event) {
