@@ -8,7 +8,6 @@ BrainBrowser.config.set("intensity_data_types.text.worker", "text.intensity.work
 BrainBrowser.config.set("intensity_data_types.freesurferbin.worker", "freesurferbin.intensity.worker.js");
 BrainBrowser.config.set("intensity_data_types.freesurferbin.binary", true);
 BrainBrowser.config.set("intensity_data_types.freesurferasc.worker", "freesurferasc.intensity.worker.js");
-
 BrainBrowser.config.set("model_types.vtk.worker", "vtk.worker.js");
 BrainBrowser.config.set("intensity_data_types.csv.worker", "csv.intensity.worker.js");
 BrainBrowser.config.set('worker_dir', './brainbrowser-2.5.0/workers/');
@@ -41,26 +40,20 @@ var gui = new dat.GUI();
 var inputs = queryStringToHash();
 
 var modelUrl = inputs.model || './models/vtk/freesurfer_curvature.vtk;./models/vtk/rh_freesurfer_curvature.vtk'
-var overlayUrl = inputs.overlay || './models/vertices.csv;./models/rh_vertices.csv'
-
+if (modelUrl != inputs.model){
+    var overlayUrl = './models/vertices.csv;./models/rh_vertices.csv'
+}
+else{
+    var overlayUrl = inputs.overlay
+}
 //if multiple input models, need to split then
 //var modelUrl = inputs.model
 //var overlayUrl = inputs.overlay
 modelUrl = modelUrl.split(';');
-overlayUrl = overlayUrl.split(';');
-//// need to shallow copy the elements
 modelFname = modelUrl.slice(0);
-overlayFname = overlayUrl.slice(0);
 for (f=0; f<modelUrl.length; f++) {
   modelFname[f] = modelUrl[f].split('/').slice(-1).pop();
 }
-
-for (f=0; f<overlayUrl.length; f++) {
-    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop();
-}
-
-
-//    // determine model/overlay file formats
 urlsplit = modelUrl[0].split('.');
 ext = urlsplit.slice(-1).pop();
 if (ext == 'pial' || ext == 'white') {
@@ -70,6 +63,18 @@ else {
    format = ext; // e.g., vtk
 }
 modelFormat = format;
+var totalModels = modelFname.length
+console.log("modelformat", modelFormat)
+
+if (overlayUrl){
+overlayUrl = overlayUrl.split(';');
+//// need to shallow copy the elements
+overlayFname = overlayUrl.slice(0);
+for (f=0; f<overlayUrl.length; f++) {
+    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop();
+}
+
+//    // determine model/overlay file formats
 urlsplit = overlayUrl[0].split('.');
 ext = urlsplit.slice(-1).pop();
 if (ext == 'thickness' || ext == 'curv') {
@@ -82,11 +87,18 @@ else {
       format = ext; // e.g., csv
 }
 overlayFormat = format;
+var totalOverlays = overlayFname.length 
+}
+else{
+totalOverlays = 0
+overlayUrl = []
+overlayFormat = null
+}
+
 
 var colormaps = {}
 BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[val.name] = val.url})
-var totalModels = modelFname.length
-var totalOverlays = overlayFname.length
+console.log(totalModels, totalOverlays)
 
 var opts = {
   lines: 13 // The number of lines to draw
