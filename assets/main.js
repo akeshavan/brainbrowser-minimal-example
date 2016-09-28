@@ -168,6 +168,13 @@ function handleBrainz(viewer) {
     rotation.add(window.viewer.autorotate, "z")
     rotation.add(window.viewer.autorotate, "y")
     rotation.add(window.viewer.autorotate, "x")
+    var color = gui.addFolder("Background")
+    var colors = {"white": "0XFFFFFF", "black": "0x101010"}
+    var colorSelect = {"color":"white"}
+    var cs = color.add(colorSelect,"color", ["white", "black"])
+    cs.onChange(function(coloropt){
+      viewer.setClearColor(colors[coloropt])
+    })
     window.addedMainGui = true}
     if (window.numLoadedModels == totalModels && window.numLoadedOverlays == totalOverlays){spinner.stop(target)}
   });
