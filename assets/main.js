@@ -1,5 +1,5 @@
-BrainBrowser.config.set("model_types.json.worker", "json.worker.js");
-BrainBrowser.config.set("model_types.mniobj.worker", "mniobj.worker.js");
+//BrainBrowser.config.set("model_types.json.worker", "json.worker.js");
+/*BrainBrowser.config.set("model_types.mniobj.worker", "mniobj.worker.js");
 BrainBrowser.config.set("model_types.wavefrontobj.worker", "wavefrontobj.worker.js");
 BrainBrowser.config.set("model_types.freesurferbin.worker", "freesurferbin.worker.js");
 BrainBrowser.config.set("model_types.freesurferbin.binary", true);
@@ -8,6 +8,7 @@ BrainBrowser.config.set("intensity_data_types.text.worker", "text.intensity.work
 BrainBrowser.config.set("intensity_data_types.freesurferbin.worker", "freesurferbin.intensity.worker.js");
 BrainBrowser.config.set("intensity_data_types.freesurferbin.binary", true);
 BrainBrowser.config.set("intensity_data_types.freesurferasc.worker", "freesurferasc.intensity.worker.js");
+*/
 BrainBrowser.config.set("model_types.vtk.worker", "vtk.worker.js");
 BrainBrowser.config.set("intensity_data_types.csv.worker", "csv.intensity.worker.js");
 BrainBrowser.config.set('worker_dir', './brainbrowser-2.5.0/workers/');
@@ -66,33 +67,34 @@ modelFormat = format;
 var totalModels = modelFname.length
 console.log("modelformat", modelFormat)
 
-if (overlayUrl){
-overlayUrl = overlayUrl.split(';');
-//// need to shallow copy the elements
-overlayFname = overlayUrl.slice(0);
-for (f=0; f<overlayUrl.length; f++) {
-    overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop();
-}
+if (overlayUrl)
+{
+  overlayUrl = overlayUrl.split(';');
+  //// need to shallow copy the elements
+  overlayFname = overlayUrl.slice(0);
+  for (f=0; f<overlayUrl.length; f++) {
+      overlayFname[f] = overlayUrl[f].split('/').slice(-1).pop();
+  }
 
-//    // determine model/overlay file formats
-urlsplit = overlayUrl[0].split('.');
-ext = urlsplit.slice(-1).pop();
-if (ext == 'thickness' || ext == 'curv') {
-   format = 'freesurferbin';
-}
-else if (ext == 'asc') {
-    format = 'freesurferasc';
+  //    // determine model/overlay file formats
+  urlsplit = overlayUrl[0].split('.');
+  ext = urlsplit.slice(-1).pop();
+  if (ext == 'thickness' || ext == 'curv') {
+     format = 'freesurferbin';
+  }
+  else if (ext == 'asc') {
+      format = 'freesurferasc';
+  }
+  else {
+        format = ext; // e.g., csv
+  }
+  overlayFormat = format;
+  var totalOverlays = overlayFname.length
 }
 else {
-      format = ext; // e.g., csv
-}
-overlayFormat = format;
-var totalOverlays = overlayFname.length 
-}
-else{
-totalOverlays = 0
-overlayUrl = []
-overlayFormat = null
+  totalOverlays = 0
+  overlayUrl = []
+  overlayFormat = null
 }
 
 
@@ -101,26 +103,26 @@ BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[
 console.log(totalModels, totalOverlays)
 
 var opts = {
-  lines: 13 // The number of lines to draw
-, length: 28 // The length of each line
-, width: 14 // The line thickness
-, radius: 42 // The radius of the inner circle
-, scale: 1 // Scales overall size of the spinner
-, corners: 1 // Corner roundness (0..1)
-, color: '#000' // #rgb or #rrggbb or array of colors
-, opacity: 0.25 // Opacity of the lines
-, rotate: 0 // The rotation offset
-, direction: 1 // 1: clockwise, -1: counterclockwise
-, speed: 1 // Rounds per second
-, trail: 60 // Afterglow percentage
-, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-, zIndex: 2e9 // The z-index (defaults to 2000000000)
-, className: 'spinner' // The CSS class to assign to the spinner
-, top: '50%' // Top position relative to parent
-, left: '50%' // Left position relative to parent
-, shadow: false // Whether to render a shadow
-, hwaccel: false // Whether to use hardware acceleration
-, position: 'absolute' // Element positioning
+    lines: 13 // The number of lines to draw
+  , length: 28 // The length of each line
+  , width: 14 // The line thickness
+  , radius: 42 // The radius of the inner circle
+  , scale: 1 // Scales overall size of the spinner
+  , corners: 1 // Corner roundness (0..1)
+  , color: '#000' // #rgb or #rrggbb or array of colors
+  , opacity: 0.25 // Opacity of the lines
+  , rotate: 0 // The rotation offset
+  , direction: 1 // 1: clockwise, -1: counterclockwise
+  , speed: 1 // Rounds per second
+  , trail: 60 // Afterglow percentage
+  , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+  , zIndex: 2e9 // The z-index (defaults to 2000000000)
+  , className: 'spinner' // The CSS class to assign to the spinner
+  , top: '50%' // Top position relative to parent
+  , left: '50%' // Left position relative to parent
+  , shadow: false // Whether to render a shadow
+  , hwaccel: false // Whether to use hardware acceleration
+  , position: 'absolute' // Element positioning
 }
 var target = document.getElementById('brainbrowser')
 var spinner = new Spinner(opts).spin(target);
@@ -129,12 +131,12 @@ var spinner = new Spinner(opts).spin(target);
 function handleBrainz(viewer) {
   var meshgui;
  // alias BB's THREE
-    var THREE = BrainBrowser.SurfaceViewer.THREE;
-      var COLORS = {
+  var THREE = BrainBrowser.SurfaceViewer.THREE;
+  var COLORS = {
           WHITE: 0xFFFFFF,
-              BLACK: 0x101010
-                };
- 
+          BLACK: 0x101010
+          };
+
   window.viewer = viewer;
   window.gui = gui;
   window.addedMainGui = false
@@ -147,12 +149,14 @@ function handleBrainz(viewer) {
     window.brainBrowserModels.push(brainBrowserModel)
     window.numLoadedModels = window.numLoadedModels + 1
     brainBrowserModel.model.children.forEach(function(shape){
-      shape.material = new THREE.MeshLambertMaterial( {
-        color: COLORS.WHITE,
-        ambient: COLORS.WHITE,
-        specular: COLORS.BLACK,
-        vertexColors: THREE.VertexColors
-      });
+      if (shape.type=="Mesh"){
+        shape.material = new THREE.MeshLambertMaterial( {
+          color: COLORS.WHITE,
+          ambient: COLORS.WHITE,
+          specular: COLORS.BLACK,
+          vertexColors: THREE.VertexColors
+        });
+    }
     });
 
     if (window.addedMainGui == false){
@@ -199,19 +203,19 @@ function handleBrainz(viewer) {
   });
 
   viewer.addEventListener("loadcolormap", function(event) {
-    viewer.color_map.clamp = false; 
+    viewer.color_map.clamp = false;
   });
 
   // Start rendering the scene.
   viewer.render();
-  viewer.setClearColor(0XFFFFFF);
+  viewer.setClearColor(0xFFFFFF);
   viewer.loadColorMapFromURL(BrainBrowser.config.get("color_maps")[0].url);
 
   // Load a model into the scene.
-  
+
   var overlayLoader = function(viewer, overlay, format, name, index, all_model_names){
     return function(){
-        /*var idx = 0 
+        /*var idx = 0
         viewer.model_data.forEach(function(model_data, model_name){
             model_data.name = all_model_names[idx]
             idx = idx + 1
@@ -227,12 +231,12 @@ function handleBrainz(viewer) {
 
   }
 
-  
+
   for(var surf=0; surf<modelUrl.length; surf++){
-    //console.log(modelUrl[surf], overlayUrl[surf])   
+    //console.log(modelUrl[surf], overlayUrl[surf])
     viewer.loadModelFromURL(modelUrl[surf], {
       format: modelFormat,
-      complete: overlayLoader(window.viewer, overlayUrl[surf], overlayFormat, 
+      complete: overlayLoader(window.viewer, overlayUrl[surf], overlayFormat,
                               modelFname[surf], surf, modelFname)
     });
   }
