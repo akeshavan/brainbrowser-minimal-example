@@ -93,10 +93,12 @@ function setupGui(viewer, config){
 
   //var color = gui.addFolder("Background")
   var colors = {"white": "0XFFFFFF", "black": "0x101010"}
-  var colorSelect = {"background color":"white"}
-  var cs = gui.add(colorSelect,"background color", ["white", "black"])
+  var bg = config.background_color || "WHITE"
+  viewer.setClearColor(COLORS[bg]);
+  var colorSelect = {"background color":bg}
+  var cs = gui.add(colorSelect,"background color", ["WHITE", "BLACK"])
   cs.onChange(function(coloropt){
-    viewer.setClearColor(colors[coloropt])
+    viewer.setClearColor(COLORS[coloropt])
   })
 
 
