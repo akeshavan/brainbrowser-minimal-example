@@ -1,0 +1,22 @@
+{
+  "data": [{
+    "location": "./models/vtk/rh_freesurfer_curvature.vtk"
+  }, {
+    "location": "./models/vtk/freesurfer_curvature.vtk"
+  }],
+  "encoding": {
+    "intensity": [{
+      "location": "./models/rh_vertices.csv",
+      "field": "rh_freesurfer_curvature.vtk",
+      "options": {
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"]
+      }
+    }, {
+      "location": "./models/vertices.csv",
+      "field": "freesurfer_curvature.vtk",
+      "options": {
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"]
+      }
+    }]
+  } 
+}
