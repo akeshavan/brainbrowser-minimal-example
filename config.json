@@ -4,7 +4,7 @@
   }, {
     "location": "./models/vtk/freesurfer_curvature.vtk"
   }],
-  "colorMap": "Blue",
+  "colorMap": "Spectral",
   "encoding": {
     "intensity": [{
       "location": "./models/rh_vertices.csv",

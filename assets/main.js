@@ -8,10 +8,13 @@ var COLORS = {
 var colormaps = {}
 BrainBrowser.config.get("color_maps").forEach(function(val, idx, arr){colormaps[val.name] = val.url})
 
+var target = document.getElementById('brainbrowser')
+
 BrainBrowser.SurfaceViewer.start('brainbrowser', handleBrainz);
 
 // Pulled out this function from the start call so that it's not so nested.
 function handleBrainz(viewer) {
+
   var inputs = queryStringToHash();
 
   // Start rendering the scene.
@@ -41,6 +44,8 @@ function loadData(viewer, config){
 
     config.encoding.intensity.forEach(function(intensityData){
       if(brainBrowserModel.model_data.name === intensityData.field){
+        var spinny = getSpinner()
+        spinny.spin(target)
         console.log("would like to load intensities",intensityData.location,
          intensityData.format ||  getFileExtension(intensityData.location),
          brainBrowserModel.model_data.name, intensityData.options
@@ -48,7 +53,8 @@ function loadData(viewer, config){
        viewer.loadIntensityDataFromURL(intensityData.location, {
         format: intensityData.format ||  getFileExtension(intensityData.location),
         name: intensityData.options.selectColumn,
-        model_name: intensityData.field
+        model_name: intensityData.field,
+        complete: function(){spinny.stop(target)}
       });
         //viewer.loadIntensityDataSetFromURL(intensityData.location, {
         //  format: intensityData.format ||  getFileExtension(intensityData.location),
@@ -61,9 +67,11 @@ function loadData(viewer, config){
   });
 
   config.data.forEach(function(model){
-
+    var spinny = getSpinner()
+    spinny.spin(target)
     viewer.loadModelFromURL(model.location, {
-      format: model.format || getFileExtension(model.location)
+      format: model.format || getFileExtension(model.location),
+      complete: function(){spinny.stop(target)}
     });
 
   });
@@ -84,15 +92,18 @@ function loadData(viewer, config){
 
 function setupGui(viewer, config){
   var gui = new dat.GUI();
+
+  // Screenshot Button
   var screenshot = { 'Capture Image':function(){ window.open(document.getElementsByTagName("canvas")[0].toDataURL("image/png", "final")) }};
   gui.add(screenshot,'Capture Image');
+
+  // Rotation Options
   var rotation = gui.addFolder("Rotation")
   rotation.add(window.viewer.autorotate, "z")
   rotation.add(window.viewer.autorotate, "y")
   rotation.add(window.viewer.autorotate, "x")
 
-  //var color = gui.addFolder("Background")
-  var colors = {"white": "0XFFFFFF", "black": "0x101010"}
+  // Background Color Option
   var bg = config.background_color || "WHITE"
   viewer.setClearColor(COLORS[bg]);
   var colorSelect = {"background color":bg}
@@ -188,4 +199,31 @@ function getFileExtension(fileLocation){
 // taken from https://css-tricks.com/snippets/jquery/get-query-params-object/
 function queryStringToHash(str){
   return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+}
+
+function getSpinner(){
+  var opts = {
+      lines: 13 // The number of lines to draw
+    , length: 28 // The length of each line
+    , width: 14 // The line thickness
+    , radius: 42 // The radius of the inner circle
+    , scale: 1 // Scales overall size of the spinner
+    , corners: 1 // Corner roundness (0..1)
+    , color: '#000' // #rgb or #rrggbb or array of colors
+    , opacity: 0.25 // Opacity of the lines
+    , rotate: 0 // The rotation offset
+    , direction: 1 // 1: clockwise, -1: counterclockwise
+    , speed: 1 // Rounds per second
+    , trail: 60 // Afterglow percentage
+    , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+    , zIndex: 2e9 // The z-index (defaults to 2000000000)
+    , className: 'spinner' // The CSS class to assign to the spinner
+    , top: '50%' // Top position relative to parent
+    , left: '50%' // Left position relative to parent
+    , shadow: false // Whether to render a shadow
+    , hwaccel: false // Whether to use hardware acceleration
+    , position: 'absolute' // Element positioning
+  }
+  var spinner = new Spinner(opts) //.spin(target);
+  return spinner
 }
