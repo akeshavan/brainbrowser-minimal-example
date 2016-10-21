@@ -21,6 +21,7 @@ function handleBrainz(viewer) {
   viewer.addEventListener('loadconfig', function(config){
     setupGui(viewer, config);
     loadData(viewer, config);
+    window.config = config
   })
 
   if(inputs.config){
@@ -46,7 +47,7 @@ function loadData(viewer, config){
        )
        viewer.loadIntensityDataFromURL(intensityData.location, {
         format: intensityData.format ||  getFileExtension(intensityData.location),
-        name: intensityData.options.columns[1],
+        name: intensityData.options.selectColumn,
         model_name: intensityData.field
       });
         //viewer.loadIntensityDataSetFromURL(intensityData.location, {
@@ -132,7 +133,8 @@ function setupGui(viewer, config){
   viewer.addEventListener("loadintensitydata", function(event) {
     var model_data = event.model_data;
     var intensity_data = event.intensity_data;
-    intensity_data.colormap_name = "Spectral"
+    console.log("intensity_data", intensity_data)
+    intensity_data.colormap_name = window.config.colorMap || "Spectral"
     var overlayGui = gui.__folders[model_data.name].addFolder(intensity_data.name);
     overlayGui.open();
 
@@ -168,11 +170,13 @@ function makeDefaultConfigFromInputs(inputs){
         location: overlayUrl,
         field: modelUrl.split('/').pop(),
         options: {
-          columns: ['freesurfer convexity (sulc)', 'freesurfer thickness', 'freesurfer curvature']
+          columns: ['freesurfer convexity (sulc)', 'freesurfer thickness', 'freesurfer curvature'],
+          selectColumn: 'freesurfer thickness'
         }
       }]
     }
   };
+  return viewerConfig
 }
 
 function getFileExtension(fileLocation){

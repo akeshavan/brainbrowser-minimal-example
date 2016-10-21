@@ -4,19 +4,22 @@
   }, {
     "location": "./models/vtk/freesurfer_curvature.vtk"
   }],
+  "colorMap": "Blue",
   "encoding": {
     "intensity": [{
       "location": "./models/rh_vertices.csv",
       "field": "rh_freesurfer_curvature.vtk",
       "options": {
-        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"]
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"],
+        "selectColumn": "freesurfer thickness"
       }
     }, {
       "location": "./models/vertices.csv",
       "field": "freesurfer_curvature.vtk",
       "options": {
-        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"]
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"],
+        "selectColumn": "freesurfer thickness"
       }
     }]
-  } 
+  }
 }
