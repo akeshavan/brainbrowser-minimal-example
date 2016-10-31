@@ -1,0 +1,35 @@
+{
+  "data": [{
+    "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/rh_freesurfer_thickness.vtk"
+  }, {
+    "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/lh_freesurfer_thickness.vtk"
+  }, {
+    "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/lesions_all.vtk"
+    },
+    {"location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/tracks.json"}],
+  "colorMap": "Blue",
+  "background_color": "WHITE",
+  "encoding": {
+    "intensity": [{
+      "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/rh_vertices.csv",
+      "field": "rh_freesurfer_thickness.vtk",
+      "options": {
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"],
+        "selectColumn": "freesurfer thickness"
+      }
+    }, {
+      "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/lh_vertices.csv",
+      "field": "lh_freesurfer_thickness.vtk",
+      "options": {
+        "columns": ["freesurfer convexity (sulc)", "freesurfer thickness", "freesurfer curvature"],
+        "selectColumn": "freesurfer thickness"
+      }}, {
+        "location": "https://dl.dropboxusercontent.com/u/9020198/lesions/mse4664/lesions_all.csv",
+        "field": "lesions_all.vtk",
+        "options": {
+          "columns": ["freesurfer convexity (sulc)", "freesurfer", "freesurfer thickness"],
+          "selectColumn": "freesurfer thickness"
+        }
+    }]
+  }
+}
