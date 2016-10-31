@@ -129,15 +129,17 @@ function setupGui(viewer, config){
         });
 
       }
-
-      var shapeGui = gui.addFolder(brainBrowserModel.model_data.name);
-      shapeGui
+      var folders = Object.keys(gui.__folders)
+      if (folders.indexOf(brainBrowserModel.model_data.name) < 0){
+        var shapeGui = gui.addFolder(brainBrowserModel.model_data.name);
+        shapeGui
         .add(shape.material, 'opacity',0,1)
         .onChange(function(newT){
           viewer.setTransparency(newT, {shape_name: shape.name})
         });
 
-      shapeGui.open();
+        shapeGui.open();
+      }
     });
 
   });
