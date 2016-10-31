@@ -29,7 +29,7 @@
         "options": {
           "columns": ["freesurfer convexity (sulc)", "freesurfer", "freesurfer thickness"],
           "selectColumn": "freesurfer thickness"
-        }t fetgit git checkout gh-pages
+        }t fetgit git checkout gh-pagesgit checkout master
     }]
   }
 }
