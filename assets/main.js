@@ -1,15 +1,17 @@
 'use strict';
-
+console.log("HELLO I'M RUNNING THE MAIN STUFF")
 var COLORS = {
   WHITE: 0xFFFFFF,
   BLACK: 0x101010
 };
 
+/*
 BrainBrowser.SurfaceViewer.start('brainbrowser', handleBrainz);
 
 // Pulled out this function from the start call so that it's not so nested.
 function handleBrainz(viewer) {
   var inputs = queryStringToHash();
+  console.log("inputs", inputs)
   window.viewer = viewer //AK: for debugging in console
   // Start rendering the scene.
   viewer.render();
@@ -25,8 +27,9 @@ function handleBrainz(viewer) {
     });
   }
 }
-
+*/
 function buildOptions(data, modelData){
+  console.log("buildOptions", data, modelData)
   return {
     format: data.format ||  getFileExtension(data.location),
     model_name: modelData.name,
@@ -133,10 +136,14 @@ function loadData(viewer, config){
 
 function setupGui(viewer, config){
   var gui = new dat.GUI();
+  gui.domElement.id = "gui";
+  $(".dg.ac")[0].style.top = "605px"
   window.config = config
   // load all the atlas mappers
   config.timepoints.forEach(function(info, index, arr){
     d3.csv(info.file, function(err, data){
+      window.initial_mapper = data
+      console.log("set the initial mapper data")
       var mapper = {}
       data.forEach(function(val){
         mapper[parseInt(val[info.id_column])] = parseFloat(val[info.value_column])
@@ -272,7 +279,7 @@ function getSpinner(){
     , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
     , zIndex: 2e9 // The z-index (defaults to 2000000000)
     , className: 'spinner' // The CSS class to assign to the spinner
-    , top: '50%' // Top position relative to parent
+    , top: '90%' // Top position relative to parent
     , left: '50%' // Left position relative to parent
     , shadow: false // Whether to render a shadow
     , hwaccel: false // Whether to use hardware acceleration

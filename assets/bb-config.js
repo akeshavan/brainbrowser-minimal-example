@@ -2,7 +2,7 @@ BrainBrowser.config.set("model_types.vtk.worker", "vtk.worker.js");
 BrainBrowser.config.set("intensity_data_types.csv.worker", "csv.intensity.worker.js");
 BrainBrowser.config.set("intensity_data_types.csvcolumn.worker", "csvcolumn.intensity.worker.js");
 BrainBrowser.config.set("intensity_data_types.atlas_csv.worker", "atlas.intensity.worker.js");
-BrainBrowser.config.set('worker_dir', '../brainbrowser/src/brainbrowser/workers/');
+BrainBrowser.config.set('worker_dir', '/client/brainbrowser-minimal-example/brainbrowser/src/brainbrowser/workers/');
 BrainBrowser.config.set("color_maps", [
   {
     name: "Spectral",
@@ -26,7 +26,7 @@ BrainBrowser.config.set("color_maps", [
   },
   {
     name: "RedBlue",
-    url: "color-maps/redblue.txt",
+    url: "/client/brainbrowser-minimal-example/color-maps/redblue.txt",
   }
 ]);
 
